@@ -49,6 +49,16 @@ class MovementCreate(BaseModel):
     regressions: list[str] = []
 
 
+class BulkImport(BaseModel):
+    movements: list[MovementCreate]
+
+
+class BulkImportResult(BaseModel):
+    created: int = 0
+    updated: int = 0
+    errors: list[str] = []
+
+
 class MovementUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
@@ -124,6 +134,27 @@ def update_movement(
     db.commit()
     db.refresh(movement)
     return movement.to_dict()
+
+
+@app.post("/api/movements/bulk")
+def bulk_import(data: BulkImport, db: Session = Depends(get_db)):
+    result = BulkImportResult()
+    for item in data.movements:
+        try:
+            existing = db.query(Movement).filter(Movement.id == item.id).first()
+            if existing:
+                for key, value in item.model_dump().items():
+                    if key != "id":
+                        setattr(existing, key, value)
+                result.updated += 1
+            else:
+                movement = Movement(**item.model_dump())
+                db.add(movement)
+                result.created += 1
+        except Exception as e:
+            result.errors.append(f"{item.id}: {str(e)}")
+    db.commit()
+    return result.model_dump()
 
 
 @app.delete("/api/movements/{movement_id}", status_code=204)

@@ -4,33 +4,50 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CrossFit Movement Model Editor</title>
-  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/styles.css?v=2">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 </head>
 <body>
-  <div class="container">
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <h1>Movement Editor</h1>
-        <div class="file-actions">
-          <button class="btn btn-secondary" onclick="refreshMovements()">Refresh</button>
-        </div>
-      </div>
-      <div class="movement-list" id="movement-list"></div>
-      <button class="btn btn-primary add-movement-btn" onclick="addNewMovement()">+ Add Movement</button>
-    </aside>
+  <nav class="tab-bar">
+    <button class="tab active" data-view="editor" onclick="switchView('editor')">Editor</button>
+    <button class="tab" data-view="stats" onclick="switchView('stats')">Stats</button>
+  </nav>
 
-    <main class="main-content" id="main-content">
-      <div class="empty-state">
-        <h3>No movement selected</h3>
-        <p>Select a movement from the list or add a new one</p>
-      </div>
-    </main>
+  <div id="view-editor" class="view">
+    <div class="container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h1>Movement Editor</h1>
+          <div class="file-actions">
+            <button class="btn btn-secondary" onclick="refreshMovements()">Refresh</button>
+            <button class="btn btn-secondary" onclick="exportMovements()">Export</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('import-file').click()">Import</button>
+            <input type="file" id="import-file" accept=".json" style="display:none" onchange="importMovements(event)">
+          </div>
+        </div>
+        <div class="sidebar-search">
+          <input type="text" id="search-input" placeholder="Search movements..." oninput="renderMovementList()">
+        </div>
+        <div class="movement-list" id="movement-list"></div>
+        <button class="btn btn-primary add-movement-btn" onclick="addNewMovement()">+ Add Movement</button>
+      </aside>
+
+      <main class="main-content" id="main-content">
+        <div class="empty-state">
+          <h3>No movement selected</h3>
+          <p>Select a movement from the list or add a new one</p>
+        </div>
+      </main>
+    </div>
   </div>
+
+  <div id="view-stats" class="view" style="display:none"></div>
 
   <div class="toast" id="toast"></div>
 
-  <script src="/js/app.js"></script>
-  <script src="/js/renderer.js"></script>
-  <script src="/js/editor.js"></script>
+  <script src="/js/app.js?v=2"></script>
+  <script src="/js/renderer.js?v=2"></script>
+  <script src="/js/editor.js?v=2"></script>
+  <script src="/js/stats.js?v=2"></script>
 </body>
 </html>

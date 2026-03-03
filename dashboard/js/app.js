@@ -2,6 +2,28 @@
 let schema = null;
 let movements = [];
 let selectedMovementId = null;
+let currentView = 'editor';
+
+// Category color map
+const CATEGORY_COLORS = {
+  Gymnastics: { bg: '#8b5cf620', border: '#8b5cf6', text: '#8b5cf6' },
+  Weightlifting: { bg: '#f59e0b20', border: '#f59e0b', text: '#f59e0b' },
+  Monostructural: { bg: '#06b6d420', border: '#06b6d4', text: '#06b6d4' },
+};
+
+function getCategoryColor(category) {
+  return CATEGORY_COLORS[category] || { bg: 'var(--bg-primary)', border: 'var(--border)', text: 'var(--text-secondary)' };
+}
+
+// View switching
+function switchView(view) {
+  currentView = view;
+  document.querySelectorAll('.tab').forEach((t) => t.classList.toggle('active', t.dataset.view === view));
+  document.querySelectorAll('.view').forEach((v) => (v.style.display = 'none'));
+  document.getElementById('view-' + view).style.display = '';
+
+  if (view === 'stats') renderStatsView();
+}
 
 // API client
 const api = {
@@ -54,21 +76,44 @@ const api = {
     if (!res.ok) throw new Error('Failed to fetch schema');
     return res.json();
   },
+
+  async bulkImport(movementsList) {
+    const res = await fetch('/api/movements/bulk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ movements: movementsList }),
+    });
+    if (!res.ok) throw new Error('Failed to bulk import');
+    return res.json();
+  },
 };
 
-// Render movement list in sidebar
+// Render movement list in sidebar (with search filter)
 function renderMovementList() {
   const list = document.getElementById('movement-list');
-  list.innerHTML = movements
-    .map(
-      (m) => `
+  const searchInput = document.getElementById('search-input');
+  const searchText = searchInput ? searchInput.value.toLowerCase() : '';
+
+  const filtered = movements.filter((m) => {
+    if (!searchText) return true;
+    return (
+      m.name.toLowerCase().includes(searchText) ||
+      m.category.toLowerCase().includes(searchText)
+    );
+  });
+
+  list.innerHTML = filtered
+    .map((m) => {
+      const colors = getCategoryColor(m.category);
+      return `
     <div class="movement-item ${m.id === selectedMovementId ? 'active' : ''}"
+         style="${m.id !== selectedMovementId ? `border-left: 3px solid ${colors.border}` : ''}"
          onclick="selectMovement('${m.id}')">
       <span>${m.name}</span>
-      <span class="category-badge">${m.category}</span>
+      <span class="category-badge" style="background:${colors.bg};color:${colors.text};border:1px solid ${colors.border}">${m.category}</span>
     </div>
-  `
-    )
+  `;
+    })
     .join('');
 }
 

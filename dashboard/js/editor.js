@@ -18,7 +18,10 @@ function renderEditor() {
   let html = `
     <div class="editor-header">
       <h2>${movement.name || 'New Movement'}</h2>
-      <button class="btn btn-danger" onclick="deleteMovement('${movement.id}')">Delete</button>
+      <div class="editor-header-actions">
+        <button class="btn btn-secondary" onclick="duplicateMovement('${movement.id}')">Duplicate</button>
+        <button class="btn btn-danger" onclick="deleteMovement('${movement.id}')">Delete</button>
+      </div>
     </div>
     <div class="form-grid">
   `;
@@ -217,6 +220,27 @@ async function addNewMovement() {
   }
 }
 
+async function duplicateMovement(id) {
+  const original = movements.find((m) => m.id === id);
+  if (!original) return;
+
+  const newId = `${id}-copy-${Date.now()}`;
+  const copy = {
+    ...JSON.parse(JSON.stringify(original)),
+    id: newId,
+    name: original.name + ' (Copy)',
+  };
+
+  try {
+    const created = await api.createMovement(copy);
+    movements.push(created);
+    selectMovement(created.id);
+    showToast('Movement duplicated');
+  } catch (err) {
+    showToast('Failed to duplicate: ' + err.message, true);
+  }
+}
+
 async function deleteMovement(id) {
   if (!confirm('Are you sure you want to delete this movement?')) return;
 
@@ -232,5 +256,48 @@ async function deleteMovement(id) {
     showToast('Movement deleted');
   } catch (err) {
     showToast('Failed to delete: ' + err.message, true);
+  }
+}
+
+// Export all movements as JSON download
+async function exportMovements() {
+  try {
+    const all = await api.getMovements();
+    const blob = new Blob([JSON.stringify(all, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'movements.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Exported ' + all.length + ' movements');
+  } catch (err) {
+    showToast('Failed to export: ' + err.message, true);
+  }
+}
+
+// Import movements from JSON file
+async function importMovements(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  try {
+    const text = await file.text();
+    const data = JSON.parse(text);
+    const movementsList = Array.isArray(data) ? data : data.movements || [];
+
+    if (movementsList.length === 0) {
+      showToast('No movements found in file', true);
+      return;
+    }
+
+    const result = await api.bulkImport(movementsList);
+    movements = await api.getMovements();
+    renderMovementList();
+    showToast(`Imported ${result.created + result.updated} movements (${result.errors.length} skipped)`);
+  } catch (err) {
+    showToast('Failed to import: ' + err.message, true);
+  } finally {
+    event.target.value = '';
   }
 }
