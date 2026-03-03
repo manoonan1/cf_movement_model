@@ -1,0 +1,153 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "movement.schema.json",
+  "title": "Movement",
+  "description": "CrossFit movement data model",
+  "type": "object",
+  "required": ["id", "name", "category", "movement_patterns", "difficulty", "energy_type", "energy_cost"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier (kebab-case)",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name of the movement"
+    },
+    "description": {
+      "type": "string",
+      "description": "Brief description of the movement"
+    },
+    "category": {
+      "type": "string",
+      "description": "Primary movement category",
+      "enum": ["Gymnastics", "Weightlifting", "Monostructural"]
+    },
+    "movement_patterns": {
+      "type": "array",
+      "description": "Movement patterns involved",
+      "items": {
+        "type": "string",
+        "enum": ["Push", "Pull", "Squat", "Hinge", "Lunge", "Grip", "Core", "Jump"]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "equipment": {
+      "type": "array",
+      "description": "Equipment required for this movement",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true,
+      "default": []
+    },
+    "muscle_groups": {
+      "type": "array",
+      "description": "Muscle groups targeted",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Quads",
+          "Hamstrings",
+          "Glutes",
+          "Calves",
+          "Lats",
+          "Traps",
+          "Chest",
+          "Shoulders",
+          "Triceps",
+          "Biceps",
+          "Forearms",
+          "Abs",
+          "Upper Back",
+          "Lower Back"
+        ]
+      },
+      "uniqueItems": true,
+      "default": []
+    },
+    "difficulty": {
+      "type": "number",
+      "description": "Movement difficulty (0.0 = easiest, 1.0 = hardest)",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "energy_type": {
+      "type": "string",
+      "description": "Whether energy cost is fixed per rep or variable based on intensity",
+      "enum": ["Fixed", "Variable"]
+    },
+    "energy_cost": {
+      "type": "number",
+      "description": "Energy cost per rep/unit (0.0 = low, 1.0 = high)",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "movement_family": {
+      "type": "array",
+      "description": "Movement families this movement belongs to",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Squat",
+          "Press",
+          "Jerk",
+          "Push Up",
+          "Dip",
+          "Handstand Push Up",
+          "Pull Up",
+          "Muscle Up",
+          "Row",
+          "Rope Climb",
+          "Clean",
+          "Snatch",
+          "Deadlift",
+          "Thruster",
+          "Sit Up",
+          "Toes to Bar",
+          "Plank",
+          "Box Jump",
+          "Jump Rope",
+          "Lunge",
+          "Carry",
+          "Run",
+          "Bike",
+          "Ski",
+          "Burpee",
+          "Wall Ball"
+        ]
+      },
+      "uniqueItems": true,
+      "default": []
+    },
+    "variations": {
+      "type": "array",
+      "description": "IDs of related movement variations",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true,
+      "default": []
+    },
+    "progressions": {
+      "type": "array",
+      "description": "IDs of harder progression movements",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true,
+      "default": []
+    },
+    "regressions": {
+      "type": "array",
+      "description": "IDs of easier regression/scaling movements",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true,
+      "default": []
+    }
+  }
+}
