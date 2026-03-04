@@ -1,10 +1,28 @@
+# Python
 __pycache__/
 *.pyc
 *.pyo
-.env
-*.db
-*.sqlite3
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
 .venv/
 venv/
-node_modules/
+
+# Environment variables
+.env
+
+# Database files
+*.db
+*.sqlite3
+
+# OS
 .DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# uv
+uv.lock
