@@ -464,6 +464,58 @@ body {
   color: white;
 }
 
+/* ========== Modal ========== */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal h3 {
+  font-size: 18px;
+}
+
+.modal .form-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.modal .form-group input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
 /* ========== Stats Dashboard ========== */
 
 .stats-grid {
@@ -517,5 +569,113 @@ body {
 .text-muted {
   color: var(--text-secondary);
   font-size: 12px;
+}
+
+/* ========== Audit Tab ========== */
+
+.audit-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 30px;
+}
+
+.audit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.audit-header h2 {
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+
+.audit-summary {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.audit-stat {
+  flex: 1;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 20px;
+  text-align: center;
+}
+
+.audit-stat-value {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--success);
+}
+
+.audit-stat.audit-status-warn .audit-stat-value {
+  color: var(--warning);
+}
+
+.audit-stat.audit-status-pass .audit-stat-value {
+  color: var(--success);
+}
+
+.audit-stat-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  display: block;
+}
+
+.audit-group {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+.audit-group h4 {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.audit-group-count {
+  background: var(--warning);
+  color: var(--bg-primary);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 10px;
+}
+
+.audit-warning-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 8px 0;
+  font-size: 13px;
+  border-top: 1px solid var(--border);
+}
+
+.audit-warning-row:first-child {
+  border-top: none;
+}
+
+.audit-movement-id {
+  font-family: monospace;
+  font-size: 12px;
+  background: var(--bg-tertiary);
+  padding: 2px 8px;
+  border-radius: 3px;
+  white-space: nowrap;
+  color: var(--accent);
 }
 

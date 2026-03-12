@@ -23,6 +23,7 @@ function switchView(view) {
   document.getElementById('view-' + view).style.display = '';
 
   if (view === 'stats') renderStatsView();
+  if (view === 'audit') renderAuditView();
 }
 
 // API client
@@ -84,6 +85,12 @@ const api = {
       body: JSON.stringify({ movements: movementsList }),
     });
     if (!res.ok) throw new Error('Failed to bulk import');
+    return res.json();
+  },
+
+  async verifyMovements() {
+    const res = await fetch('/api/movements/verify');
+    if (!res.ok) throw new Error('Failed to verify movements');
     return res.json();
   },
 };

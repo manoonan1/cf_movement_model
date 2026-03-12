@@ -4,13 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CrossFit Movement Model Editor</title>
-  <link rel="stylesheet" href="/css/styles.css?v=2">
+  <link rel="stylesheet" href="/css/styles.css?v=3">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 </head>
 <body>
   <nav class="tab-bar">
     <button class="tab active" data-view="editor" onclick="switchView('editor')">Editor</button>
     <button class="tab" data-view="stats" onclick="switchView('stats')">Stats</button>
+    <button class="tab" data-view="audit" onclick="switchView('audit')">Audit</button>
   </nav>
 
   <div id="view-editor" class="view">
@@ -42,12 +43,32 @@
   </div>
 
   <div id="view-stats" class="view" style="display:none"></div>
+  <div id="view-audit" class="view" style="display:none"></div>
+
+  <div class="modal-overlay" id="modal-overlay" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <h3 id="modal-title">New Movement</h3>
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" id="modal-name" placeholder="e.g. Back Squat" oninput="autoGenerateId()">
+      </div>
+      <div class="form-group">
+        <label>ID</label>
+        <input type="text" id="modal-id" placeholder="e.g. back-squat">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" id="modal-confirm" onclick="confirmModal()">Create</button>
+      </div>
+    </div>
+  </div>
 
   <div class="toast" id="toast"></div>
 
-  <script src="/js/app.js?v=2"></script>
-  <script src="/js/renderer.js?v=2"></script>
-  <script src="/js/editor.js?v=2"></script>
-  <script src="/js/stats.js?v=2"></script>
+  <script src="/js/app.js?v=3"></script>
+  <script src="/js/renderer.js?v=3"></script>
+  <script src="/js/editor.js?v=3"></script>
+  <script src="/js/stats.js?v=3"></script>
+  <script src="/js/audit.js?v=3"></script>
 </body>
 </html>

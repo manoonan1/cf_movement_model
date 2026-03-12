@@ -92,6 +92,7 @@ async function saveCurrentMovement() {
 
   try {
     await api.updateMovement(movement.id, movement);
+    if (currentView === 'audit') renderAuditView();
   } catch (err) {
     showToast('Failed to save: ' + err.message, true);
   }
@@ -190,55 +191,101 @@ function addRelationship(name, value) {
   saveCurrentMovement();
 }
 
-// CRUD operations
-async function addNewMovement() {
-  const newId = 'new-movement-' + Date.now();
-  const newMovement = {
-    id: newId,
-    name: 'New Movement',
-    description: '',
-    category: 'Gymnastics',
-    movement_patterns: ['Push'],
-    equipment: [],
-    muscle_groups: [],
-    movement_family: [],
-    difficulty: 0.5,
-    energy_type: 'Fixed',
-    energy_cost: 0.5,
-    variations: [],
-    progressions: [],
-    regressions: [],
-  };
+// Modal helpers
+let modalCallback = null;
 
-  try {
-    const created = await api.createMovement(newMovement);
-    movements.push(created);
-    selectMovement(created.id);
-    showToast('Movement created');
-  } catch (err) {
-    showToast('Failed to create: ' + err.message, true);
-  }
+function openModal(title, confirmLabel, defaultName, defaultId, callback) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-confirm').textContent = confirmLabel;
+  document.getElementById('modal-name').value = defaultName;
+  document.getElementById('modal-id').value = defaultId;
+  document.getElementById('modal-overlay').classList.add('open');
+  document.getElementById('modal-name').focus();
+  modalCallback = callback;
 }
 
-async function duplicateMovement(id) {
-  const original = movements.find((m) => m.id === id);
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  modalCallback = null;
+}
+
+function autoGenerateId() {
+  const name = document.getElementById('modal-name').value;
+  document.getElementById('modal-id').value = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+async function confirmModal() {
+  const name = document.getElementById('modal-name').value.trim();
+  const id = document.getElementById('modal-id').value.trim();
+
+  if (!name || !id) {
+    showToast('Name and ID are required', true);
+    return;
+  }
+
+  if (movements.some((m) => m.id === id)) {
+    showToast('A movement with this ID already exists', true);
+    return;
+  }
+
+  if (modalCallback) await modalCallback(id, name);
+  closeModal();
+}
+
+// CRUD operations
+function addNewMovement() {
+  openModal('New Movement', 'Create', '', '', async (id, name) => {
+    const newMovement = {
+      id,
+      name,
+      description: '',
+      category: 'Gymnastics',
+      movement_patterns: ['Push'],
+      equipment: [],
+      muscle_groups: [],
+      movement_family: [],
+      difficulty: 0.5,
+      energy_type: 'Fixed',
+      energy_cost: 0.5,
+      variations: [],
+      progressions: [],
+      regressions: [],
+    };
+
+    try {
+      const created = await api.createMovement(newMovement);
+      movements.push(created);
+      selectMovement(created.id);
+      showToast('Movement created');
+    } catch (err) {
+      showToast('Failed to create: ' + err.message, true);
+    }
+  });
+}
+
+function duplicateMovement(srcId) {
+  const original = movements.find((m) => m.id === srcId);
   if (!original) return;
 
-  const newId = `${id}-copy-${Date.now()}`;
-  const copy = {
-    ...JSON.parse(JSON.stringify(original)),
-    id: newId,
-    name: original.name + ' (Copy)',
-  };
+  openModal('Duplicate Movement', 'Duplicate', original.name + ' (Copy)', '', async (id, name) => {
+    const copy = {
+      ...JSON.parse(JSON.stringify(original)),
+      id,
+      name,
+    };
 
-  try {
-    const created = await api.createMovement(copy);
-    movements.push(created);
-    selectMovement(created.id);
-    showToast('Movement duplicated');
-  } catch (err) {
-    showToast('Failed to duplicate: ' + err.message, true);
-  }
+    try {
+      const created = await api.createMovement(copy);
+      movements.push(created);
+      selectMovement(created.id);
+      showToast('Movement duplicated');
+    } catch (err) {
+      showToast('Failed to duplicate: ' + err.message, true);
+    }
+  });
 }
 
 async function deleteMovement(id) {
